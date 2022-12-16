@@ -1,0 +1,34 @@
+val state = MutableStateFlow("empty")
+
+fun main() {
+ runSync()
+ runAsync()
+ 
+    state.onEach { value ->
+            println(value)
+        }.launchIn(GlobalScope)
+
+}
+
+ fun runSync() {
+        println("runSync method.")
+        for (i in 0..1000) {
+            GlobalScope.launch(Dispatchers.Main) {
+                doWork("${i}")
+            }
+        }
+    }
+    
+     fun runASync() {
+        println("runASync method.")
+        for (i in 0..1000) {
+            GlobalScope.launch(Dispatchers.Default) {
+                doWork("${i}")
+            }
+        }
+    }
+
+private suspend fun doWork(name: String) {  
+    delay(500)  
+    state.update { "$name completed." }
+}
